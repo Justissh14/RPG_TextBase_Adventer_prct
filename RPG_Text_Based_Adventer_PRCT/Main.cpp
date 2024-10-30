@@ -15,7 +15,7 @@ using std::cin;
 using std::thread;
 
 //Stat shop class
-class StatShop1 {
+class StatShop1 {  //still need to add the rest of the shop class like inv and add and sell/ display logic
 public:
 
 
@@ -26,9 +26,9 @@ public:
 void DisplayShop1() {
     cout << "\n";
     cout << "-_________-_________-" << endl;
-    cout << "[1]+100HP \n";
-    cout << "[2]+10STR \n";
-    cout << "[3]+10SPD \n";
+    cout << "[1]+100HP Potion \n";
+    cout << "[2]+10STR Potion \n";
+    cout << "[3]+10SPD Potion \n";
     cout << "_---------_---------_" << endl;
 }
 
@@ -241,7 +241,7 @@ int main() {
     int choice = 0, choice2 = 0, Quest1Choice = 0;
     int Str_bonus = 0, Mag_bonus = 0, Stm_bonus = 0, Spd_bonus = 0, Int_bonus = 0, Wis_bonus = 0, Con_bonus = 0, Cha_bonus = 0;
 
-    //Adds stats to player
+    //Adds Basestats to player stats
     Str_bonus += 5;
     Mag_bonus += 5;
     Stm_bonus += 5;
@@ -445,6 +445,7 @@ int main() {
         cin >> Quest1Choice;
         //setting this to 0 incase it already holds value above so i can reuese this integer
         choice = 0;
+        choice2 = 0;
         do {
             switch (Quest1Choice) {
             case 1:
@@ -452,12 +453,40 @@ int main() {
                 cout << "You decided to talk to the mysterious shopcart dwarf. \n";
                 this_thread::sleep_for(seconds(2));
                 cout << "\n**YOU:**" << endl;
-                cout << "Hey you, who are you?. \n";
+                cout << "Hey you, who are you?, you say to the mysterious dwarf. \n";
                 this_thread::sleep_for(seconds(3));
+                cout << "\n**MysteriousDwarf:**" << endl;
+                cout << "I am a traveling dawrf, wondering these woods with things to sell" << endl;
+                this_thread::sleep_for(seconds(2));
+                cout << "\n**MysteriousDwarf:**" << endl;
+                cout << "\nWould you like to see what I have, maybe you might find something you need. " << endl;
+                this_thread::sleep_for(seconds(2));
+                cout << "\n**YOU:**" << endl;
+                cout << "Yes please." << endl;
+                DisplayShop1();
+                cin >> choice2;
+                do {
+                    switch (choice2) {
+                    case 1:  // adds 100 HP Potion to inv
+                        
+                        break;
+                    case 2:  // adds 10 STR Potion to inv          // yet to be done
+                        break;
+                    case 3:  // adds 10 SPD Potion to inv
+                        break;
+                    default:
+                        cout << "\n**CONSOLE:**" << endl;
+                        cout << "Invalid choice. Please try again.\n";
+                        break;
+                    }
+                } while (choice2 !=6);
+
                 break;
             case 2:
                 cout << "\n**NARRATOR:**" << endl;
                 cout << "You choose to ignore the mysterious shopcart dwarf and continue down the path on your journey." << endl;
+                this_thread::sleep_for(seconds(3));
+                choice = 6;
                 break;
             default:
                 cout << "\n**CONSOLE:**" << endl;
@@ -465,9 +494,9 @@ int main() {
                 break;
             }
         } while (choice != 6);
-        // putting this back to 0 so it can be used again
+        // putting these back to 0 so it can be used again
         choice = 0;
-
+        choice2 = 0;
         cout << "\n**NARRATOR:**" << endl;
         cout << "As you continue to walk, you think to yourself, 'I feel like I have been walking forever'\n";
         this_thread::sleep_for(seconds(4));
