@@ -18,18 +18,41 @@ using std::thread;
 class StatShop1 {  //still need to add the rest of the shop class like inv and add and sell/ display logic
 public:
 
+    int Str_Potion;
+    int Spd_Potion;
+    vector <string> Shop1Inventory; //shop1 inventory
 
+     StatShop1(int Str_Potion, int Spd_Potion) : Str_Potion(0), Spd_Potion(0) {
+         for (int i = 0; i < 5; ++i) {
+             Shop1Inventory.push_back("Str_Potion");
+             Shop1Inventory.push_back("Spd_Potion");
+             Shop1Inventory.push_back("Health Potion");
+         }
+    }
 
 
 };
 
-void DisplayShop1() {
-    cout << "\n";
+void DisplayShop1Menu() {
+    cout << " \n";
+    cout << "-Potions/Consumables-" << endl;
     cout << "-_________-_________-" << endl;
-    cout << "[1]+100HP Potion \n";
+    cout << "[1]+HP Potion \n";
     cout << "[2]+10STR Potion \n";
     cout << "[3]+10SPD Potion \n";
     cout << "_---------_---------_" << endl;
+    cout << " \n";
+}
+// Function to display StatShop1 inventory
+void displayStatShop1Inventory(const StatShop1& StatShop1) {
+    cout << "\n**CONSOLE:**" << endl;
+    cout << "Your Inventory: \n";
+    cout << "-_____-_____-" << endl;
+    for (const auto& item : StatShop1.Shop1Inventory) {
+        cout << item << " \n";
+    }
+    cout << endl;
+    cout << "_-----_-----_" << endl;
 }
 
 // Character class
@@ -43,6 +66,11 @@ public:
     int xp;
     int xpToLevel;
     vector<string> inventory;
+    vector<int> Wallet;
+    
+    void addGold(int amount) {
+        Wallet.push_back(amount);
+    }
 
     Character(string n, int a) : name(n), age(a), Str(0), Mag(0), Stm(0), Spd(0), Int(0), Wis(0), Con(0), Cha(0), health(100), level(1), xp(0), xpToLevel(100) {
         inventory.push_back("Sword"); // Adds sword to inv
@@ -237,6 +265,13 @@ int main() {
     Character character("Player", 20); // Create a character
     int Exit_strat = 0;
 
+    // player starting gold
+    int gold = 100;
+    character.addGold(gold);
+    
+    
+    
+    
     // Choices
     int choice = 0, choice2 = 0, Quest1Choice = 0;
     int Str_bonus = 0, Mag_bonus = 0, Stm_bonus = 0, Spd_bonus = 0, Int_bonus = 0, Wis_bonus = 0, Con_bonus = 0, Cha_bonus = 0;
@@ -289,50 +324,53 @@ int main() {
                 cout << "\nAh yes, a poor Bagger indeed" << "(+2 Wis)\n";
                 Wis_bonus += 2;
                 Lineage_choice = "Bagger";
-                choice = 6;
+                choice = 9;
                 continue;
             case 2:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "\nNoble indeed, great things are to be expected of you" << "(+3 Cha)\n";
                 Cha_bonus += 3;
                 Lineage_choice = "Noble";
-                choice = 6;
+                choice = 9;
                 continue;
             case 3:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "\nYou're a Monster!, selfish and ugly yet dangerous!" << "(+5 Stm)\n";
                 Stm_bonus += 5;
                 Lineage_choice = "Monster";
-                choice = 6;
+                choice = 9;
                 continue;
             case 4:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "\nAn Assassin is sneaky and agile, use this info wisely" << "(+3 Spd)\n";
                 Spd_bonus += 3;
                 Lineage_choice = "Assassin";
-                choice = 6;
+                choice = 9;
                 continue;
             case 5:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "\nA Samurai, honorable yet deadly!" << "(+1 Con)\n";
                 Con_bonus += 1;
                 Lineage_choice = "Samurai";
-                choice = 6;
+                choice = 9;
                 continue;
             case 6:
-                break; // this exits the menu
+                cout << "Exitng game, goodbye! " << endl;
+                cout << "\n:)\n";
+                this_thread::sleep_for(seconds(3));
+                return 0; // this exits the menu
             default:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "Invalid choice. Please try again.\n";
                 LineageMenu();
             }
-        } while (choice != 6);
+        } while (choice != 9);
 
         // Class Selection
         cout << "\n**CONSOLE:**" << endl;
         cout << "\n| Choose Your Class |\n";
         ClassMenu();
-        StatsMenu(character);
+        
 
 
 
@@ -344,44 +382,47 @@ int main() {
                 cout << "\nWizard, a master of magic arts" << "(+3 Mag)\n";
                 Mag_bonus += 3;
                 Class_choice = "Wizard";
-                choice2 = 6;
+                choice2 = 9;
                 continue;
             case 2:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "\nBarbarian, strong and fierce" << "(+4 Str)\n";
                 Str_bonus += 4;
                 Class_choice = "Barbarian";
-                choice2 = 6;
+                choice2 = 9;
                 continue;
             case 3:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "\nMonk, a master of self control" << "(+2 Cha)\n";
                 Cha_bonus += 2;
                 Class_choice = "Monk";
-                choice2 = 6;
+                choice2 = 9;
                 continue;
             case 4:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "\nRogue, sneaky and clever" << "(+2 Mag)\n";
                 Mag_bonus += 2;
                 Class_choice = "Rogue";
-                choice2 = 6;
+                choice2 = 9;
                 continue;
             case 5:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "\nWraith, a magical ghostly being" << "(+6 Stm)\n";
                 Stm_bonus += 6;
                 Class_choice = "Wraith";
-                choice2 = 6;
+                choice2 = 9;
                 continue;
             case 6:
-                break; // this exit the menu
+                cout << "Exitng game, goodbye! " << endl;
+                cout << "\n:)\n";
+                this_thread::sleep_for(seconds(3));
+                return 0; // this exit the menu
             default:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "Invalid choice. Please try again.\n";
                 ClassMenu();
             }
-        } while (choice2 != 6);
+        } while (choice2 != 9);
 
         // Apply bonuses to character stats
         character.Str += Str_bonus;
@@ -397,7 +438,10 @@ int main() {
         SubStatsMenu(character.name, Lineage_choice, Class_choice, character.age);
         StatsMenu(character);
         displayInventory(character);
-
+        for (int money : character.Wallet) {
+            std::cout << "Wallet contains: " << money << " gold." << std::endl;
+        }
+        this_thread::sleep_for(seconds(6));
         // Start Encounter Journy
         cout << "\n**NARRATOR:**" << endl;
         cout << "\nYour journey begins in a dark shack in a clearing in the forest...\n";
@@ -463,12 +507,17 @@ int main() {
                 this_thread::sleep_for(seconds(2));
                 cout << "\n**YOU:**" << endl;
                 cout << "Yes please." << endl;
-                DisplayShop1();
+                DisplayShop1Menu();
                 cin >> choice2;
                 do {
                     switch (choice2) {
-                    case 1:  // adds 100 HP Potion to inv
-                        
+                    case 1:  // adds HP Potion to inv
+                        if {
+                            character.Wallet(amount) = < 50;
+                            cout << "Adding item to inventory " << endl;
+                            inventory.push_back("Health Potion");
+
+                        }
                         break;
                     case 2:  // adds 10 STR Potion to inv          // yet to be done
                         break;
@@ -479,21 +528,21 @@ int main() {
                         cout << "Invalid choice. Please try again.\n";
                         break;
                     }
-                } while (choice2 !=6);
+                } while (choice2 != 11);
 
                 break;
             case 2:
                 cout << "\n**NARRATOR:**" << endl;
                 cout << "You choose to ignore the mysterious shopcart dwarf and continue down the path on your journey." << endl;
                 this_thread::sleep_for(seconds(3));
-                choice = 6;
+                choice = 11;
                 break;
             default:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "Invalid choice. Please try again.\n";
                 break;
             }
-        } while (choice != 6);
+        } while (choice != 11);
         // putting these back to 0 so it can be used again
         choice = 0;
         choice2 = 0;
