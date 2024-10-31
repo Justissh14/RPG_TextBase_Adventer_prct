@@ -13,36 +13,35 @@ using std::cout;
 using std::endl;
 using std::cin;
 using std::thread;
+using std::find;
 
 //Stat shop class
-class StatShop1 {  //still need to add the rest of the shop class like inv and add and sell/ display logic
+class StatShop1 { // still need to add the rest of the shop class like inv and add and sell/ display logic
 public:
-
     int Str_Potion;
     int Spd_Potion;
-    vector <string> Shop1Inventory; //shop1 inventory
-
-     StatShop1(int Str_Potion, int Spd_Potion) : Str_Potion(0), Spd_Potion(0) {
-         for (int i = 0; i < 5; ++i) {
-             Shop1Inventory.push_back("Str_Potion");
-             Shop1Inventory.push_back("Spd_Potion");
-             Shop1Inventory.push_back("Health Potion");
-         }
+    vector<string> Shop1Inventory; // shop1 inventory
+    StatShop1(int Str_Potion, int Spd_Potion) : Str_Potion(0), Spd_Potion(0) {
+        for (int i = 0; i < 5; ++i) {
+            Shop1Inventory.push_back("Str_Potion");
+            Shop1Inventory.push_back("Spd_Potion");
+            Shop1Inventory.push_back("Health Potion");
+        }
     }
-
-
 };
 
 void DisplayShop1Menu() {
     cout << " \n";
     cout << "-Potions/Consumables-" << endl;
     cout << "-_________-_________-" << endl;
-    cout << "[1]+HP Potion \n";
-    cout << "[2]+10STR Potion \n";
-    cout << "[3]+10SPD Potion \n";
+    cout << "[1]+HP Potion-{$50} \n";
+    cout << "[2]+10STR Potion-{$25} \n";
+    cout << "[3]+10SPD Potion-{$25} \n";
+    cout << "[4]-Exit_Shop- \n";
     cout << "_---------_---------_" << endl;
     cout << " \n";
 }
+
 // Function to display StatShop1 inventory
 void displayStatShop1Inventory(const StatShop1& StatShop1) {
     cout << "\n**CONSOLE:**" << endl;
@@ -62,20 +61,63 @@ public:
     int age;
     int Str, Mag, Stm, Spd, Int, Wis, Con, Cha;
     int health;
+    int gold; // player starting gold
+    // starting gold is (100) for now.
     int level;
     int xp;
     int xpToLevel;
     vector<string> inventory;
     vector<int> Wallet;
+
+    Character(string n, int a) : name(n), age(a), Str(0), Mag(0), gold(100), Stm(0), Spd(0), Int(0), Wis(0), Con(0), Cha(0), health(100), level(1), xp(0), xpToLevel(100) {
+        inventory.push_back("Sword"); // Adds sword to inv
+        for (int i = 0; i < 5; ++i) { // Adds 5 health potions to inv
+            inventory.push_back("Health Potion");
+        }
+    }
+    // check inventory for sword and apply boost
+    void CheckForSword() {
+        if (find(inventory.begin(), inventory.end(), "Sword") != inventory.end() ){
+            Str += 10;
+        }
+    }
     
     void addGold(int amount) {
         Wallet.push_back(amount);
     }
 
-    Character(string n, int a) : name(n), age(a), Str(0), Mag(0), Stm(0), Spd(0), Int(0), Wis(0), Con(0), Cha(0), health(100), level(1), xp(0), xpToLevel(100) {
-        inventory.push_back("Sword"); // Adds sword to inv
-        for (int i = 0; i < 5; ++i) { // Adds 5 health potions to inv
+    void AddHP_Potion() {
+        if (gold >= 50) { // if equal or greater price
+            cout << "Adding HP_Potion to inventory " << endl;
             inventory.push_back("Health Potion");
+            gold -= 50;
+        }
+        else {
+            cout << "Not enough gold to buy this item " << endl;
+        }
+
+    }
+
+    void AddStr_Potion() {
+        if (gold >= 25) { // if equal or greater price
+            cout << "Adding Str_Potion to inventory " << endl;
+            inventory.push_back("Str_Potion");
+            gold -= 25;
+           
+        }
+        else {
+            cout << "Not enough gold to buy this item " << endl;
+        }
+    }
+
+    void AddSpd_Potion() {
+        if (gold >= 25) { // if equal or greater price
+            cout << "Adding Spd_Potion to inventory " << endl;
+            inventory.push_back("Spd_Potion");
+            gold -= 25;
+        }
+        else {
+            cout << "Not enough gold to buy this item " << endl;
         }
     }
 
@@ -83,9 +125,8 @@ public:
         while (xp >= xpToLevel) {
             xp -= xpToLevel;
             level++;
-            xpToLevel += 50; // Increase XP require for the next level
+            xpToLevel += 50; // Increase XP required for the next level
             Str += 2; // Increase stats on level up
-            Mag += 1;
             health += 10; // Increase health on level up
             cout << "\n**CONSOLE:**" << endl;
             cout << "Congratulations! You leveled up to level " << level << "!\n";
@@ -101,9 +142,10 @@ public:
     int health;
     int Str;
     int xpReward;
-
     NPC(string t, int h, int s, int xp) : type(t), health(h), Str(s), xpReward(xp) {}
 };
+
+
 
 // Function to display inventory
 void displayInventory(const Character& character) {
@@ -111,7 +153,7 @@ void displayInventory(const Character& character) {
     cout << "Your Inventory: \n";
     cout << "-_____-_____-" << endl;
     for (const auto& item : character.inventory) {
-        cout << item << " \n";
+        cout <<"|" << item << "| " << "\n";
     }
     cout << endl;
     cout << "_-----_-----_" << endl;
@@ -260,14 +302,20 @@ void QuestOptionMenu() {
     cout << "_-----------_-------------------_" << endl;
 }
 
+void CheckBagOptionMenu() {
+    cout << "-______________-___________________-" << endl;
+    cout << "|[1] Check Bag : [2] Put Bag Away |\n";
+    cout << "_--------------_-------------------_" << endl;
+
+}
+
 int main() {
     srand(static_cast<unsigned>(time(0))); // you have to seed for random number generation in main fnctn
     Character character("Player", 20); // Create a character
     int Exit_strat = 0;
+    //checks for sword in inventory and if found adds +10 the the players damage (Str)
+    character.CheckForSword();
 
-    // player starting gold
-    int gold = 100;
-    character.addGold(gold);
     
     
     
@@ -277,14 +325,15 @@ int main() {
     int Str_bonus = 0, Mag_bonus = 0, Stm_bonus = 0, Spd_bonus = 0, Int_bonus = 0, Wis_bonus = 0, Con_bonus = 0, Cha_bonus = 0;
 
     //Adds Basestats to player stats
-    Str_bonus += 5;
-    Mag_bonus += 5;
-    Stm_bonus += 5;
-    Spd_bonus += 5;
-    Int_bonus += 5;
-    Wis_bonus += 5;
-    Con_bonus += 5;
-    Cha_bonus += 5;
+    Str_bonus += 1;
+    Mag_bonus += 1;
+    Stm_bonus += 1;
+    Spd_bonus += 1;
+    Int_bonus += 1;
+    Wis_bonus += 1;
+    Con_bonus += 1;
+    Cha_bonus += 1;
+    
 
     do {
         cout << "RPG_Chrctr_Creator v1.0\n\n";
@@ -462,7 +511,7 @@ int main() {
         // Random Encounter
         if (rand() % 2 == 0) { // 50% chance of encountering an NPC
             cout << "\n**NARRATOR:**" << endl;
-            cout << "A SMALL GROUP OF MOBS!!!\n\n";
+            cout << "A SMALL BAND OF MOBS!!!\n\n";
             encounter(character);
         }
         else {
@@ -471,6 +520,13 @@ int main() {
             this_thread::sleep_for(seconds(2));
 
         }
+        // check the players health, if 0 game ends
+        if (character.health <= 0) {
+            cout << "\nYou have died!\n";
+            cout << "\n-Exiting Game-\n";
+            return 0;
+        }
+
 
         cout << "\n**NARRATOR:**" << endl;
         cout << "You continue your journey down the path.\n";
@@ -491,6 +547,7 @@ int main() {
         choice = 0;
         choice2 = 0;
         do {
+            
             switch (Quest1Choice) {
             case 1:
                 cout << "\n**NARRATOR:**" << endl;
@@ -507,21 +564,31 @@ int main() {
                 this_thread::sleep_for(seconds(2));
                 cout << "\n**YOU:**" << endl;
                 cout << "Yes please." << endl;
-                DisplayShop1Menu();
-                cin >> choice2;
                 do {
+                    
+
+                    DisplayShop1Menu();
+                    cin >> choice2;
                     switch (choice2) {
                     case 1:  // adds HP Potion to inv
-                        if {
-                            character.Wallet(amount) = < 50;
-                            cout << "Adding item to inventory " << endl;
-                            inventory.push_back("Health Potion");
-
-                        }
+                        character.AddHP_Potion();
+                        this_thread::sleep_for(seconds(1));
+                        cout << "\n Anything else? \n";
                         break;
-                    case 2:  // adds 10 STR Potion to inv          // yet to be done
+                    case 2:  // adds STR Potion to inv          
+                        character.AddStr_Potion();
+                        this_thread::sleep_for(seconds(1));
+                        cout << "\n Anything else? \n";
                         break;
-                    case 3:  // adds 10 SPD Potion to inv
+                    case 3:  // adds SPD Potion to inv
+                        character.AddSpd_Potion();
+                        this_thread::sleep_for(seconds(1));
+                        cout << "\n Anything else? \n";
+                        break;
+                    case 4:
+                        cout << "-Exiting shop, goodbye adventurer.- \n";
+                        this_thread::sleep_for(seconds(1));
+                        choice2 = 11;
                         break;
                     default:
                         cout << "\n**CONSOLE:**" << endl;
@@ -529,20 +596,22 @@ int main() {
                         break;
                     }
                 } while (choice2 != 11);
-
-                break;
+                Quest1Choice = 11;
+            break;
+                
             case 2:
                 cout << "\n**NARRATOR:**" << endl;
                 cout << "You choose to ignore the mysterious shopcart dwarf and continue down the path on your journey." << endl;
                 this_thread::sleep_for(seconds(3));
                 choice = 11;
+                Quest1Choice = 11;
                 break;
             default:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "Invalid choice. Please try again.\n";
                 break;
             }
-        } while (choice != 11);
+        } while (Quest1Choice != 11);
         // putting these back to 0 so it can be used again
         choice = 0;
         choice2 = 0;
@@ -560,6 +629,84 @@ int main() {
         this_thread::sleep_for(seconds(2));
         cout << "\n**NARRATOR:**" << endl;
         cout << "...a pouch on the floor inside. " << endl;
+        this_thread::sleep_for(seconds(2));
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "You walk in and stand before the pouch, What should you do?\n\n";
+        QuestOptionMenu();
+        this_thread::sleep_for(seconds(2));
+        choice = 0;
+        cin >> choice;
+        do {
+            switch (choice) {
+            case 1:
+                cout << "\n**NARRATOR:**" << endl;
+                cout << "You picked up the pouch and found a health potion inside." << endl;
+                character.inventory.push_back("Health Potion");
+                character.xp += 250;
+                character.levelUp();
+                choice2 = 11;
+                break;
+            case 2:
+                cout << "\n**NARRATOR:**" << endl;
+                cout << "You chose to ignore the pouch and leave the creepy build. " << endl;
+                choice2 = 11;
+                break;
+            default:
+                cout << "\n**CONSOLE:**" << endl;
+                cout << "Invalid choice. Please try again.\n";
+                break;
+            }
+        } while (choice2 != 11);
+        int choice3 = 0, choice4 = 0;
+        StatsMenu(character);
+        this_thread::sleep_for(seconds(5));
+
+        cout << "While outside you decide to take a break and rest for the journey to come. " << endl;
+        cout << "\n ";
+        
+
+        CheckBagOptionMenu();
+        cin >> choice3;
+        do {
+            switch (choice3) {
+            case 1:
+                cout << "\n**NARRATOR:**" << endl;
+                cout << "You decided to check your bag." << endl;
+                displayInventory(character);
+
+                this_thread::sleep_for(seconds(6));
+                cout << "+50xp for resting and full health regen." << endl;
+                character.xp += 50;
+                character.levelUp();
+                if (character.health < 100) {
+                    character.health = 100;
+                }
+                else {
+                    cout << "\nYour health is full. \n";
+                }
+                choice4 = 12;
+                break;
+            case 2:
+                cout << "\n**NARRATOR:**" << endl;
+                cout << "You decided not to check your bag and rest." << endl;
+                this_thread::sleep_for(seconds(6));
+                cout << "+50xp for resting and full health regen." << endl;
+                character.xp += 50;
+                character.levelUp();
+                if (character.health < 100) {
+                    character.health = 100;
+                }
+                else {
+                    cout << "\nYour health is full. \n";
+                }
+                choice4 = 12;
+                break;
+            default:
+                cout << "\n**CONSOLE:**" << endl;
+                cout << "Invalid choice. Please try again.\n";
+                break;
+            }
+        } while (choice4 != 12);
 
 
 
