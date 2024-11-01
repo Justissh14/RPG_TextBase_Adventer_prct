@@ -75,6 +75,40 @@ public:
             inventory.push_back("Health Potion");
         }
     }
+
+    //Function inventory use and remove hp potion
+    void Use_Remove_HP(Character& player) {
+        auto potionIt = find(player.inventory.begin(), player.inventory.end(), "Health Potion");
+        if (potionIt != player.inventory.end()) {
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You use a Health Potion!\n";
+            player.health += 80;
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You regain 80 health!\n";
+            player.inventory.erase(potionIt); // Remove one potion
+        }
+        else {
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You have no Health Potions left!\n";
+        }
+    }
+
+    //Function inventory sell and remove sword 
+    void Use_Remove_Sword(Character& player) {
+        auto weaponIt = find(player.inventory.begin(), player.inventory.end(), "Sword");
+        if (weaponIt != player.inventory.end()) {
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You sold your sword!\n";
+            player.gold += 200;
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You gained {200}$ gold!\n";
+            player.inventory.erase(weaponIt); // Remove sword from players inventory
+        }
+        else {
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You dont own sword!\n";
+        }
+    }
     // check inventory for sword and apply boost
     void CheckForSword() {
         if (find(inventory.begin(), inventory.end(), "Sword") != inventory.end() ){
@@ -223,10 +257,9 @@ void fight(Character& player, NPC& npc) {
 void encounter(Character& character) {
     vector<NPC> npcs = {
         NPC("Goblin", 30, 5, 25),
-        NPC("Orc", 40, 7, 50),
         NPC("Bandit", 50, 6, 40),
         NPC("BanditChief", 70, 4, 20),
-        NPC("Lord Calum(BOSS of Lag)", 90, 10, 40)
+        NPC("Lord Calum(Lord of Lag)", 90, 10, 40)
     };
 
     // Calum boss is a little easter egg, there is random chance of encountering him...I thought this would be funny
@@ -270,6 +303,9 @@ void ClassMenu() {
 void StatsMenu(const Character& character) {
     cout << "-_______________________________-" << endl;
     cout << "Str: " << character.Str << " Mag: " << character.Mag << endl;
+    if (find(character.inventory.begin(), character.inventory.end(), "Sword") != character.inventory.end()) {
+        cout << "+10 Str boost from ['Sword'].\n ";
+    }
     cout << "Stm: " << character.Stm << " Spd: " << character.Spd << endl;
     cout << "Int: " << character.Int << " Wis: " << character.Wis << endl;
     cout << "Con: " << character.Con << " Cha: " << character.Cha << endl;
@@ -287,6 +323,23 @@ void SubStatsMenu(const string& name, const string& Lineage_choice, const string
     cout << "Class: " << Class_choice << endl;
     cout << "_-------------------------------_" << endl;
 }
+
+// Inventory interaction menu for player
+void Invinteractionmenu() {
+    cout << "-_______________________________-" << endl;
+    cout << "|[1] Use : [2] Exit Bag |\n";
+    cout << "_-------------------------------_" << endl;
+
+}
+
+//Blacksmith Option Menu
+void BlacksmithOtionMenu() {
+    cout << "-___________-___________________-" << endl;
+    cout << " |[1] Buy : [2] Sell : [3] Exit | " << endl;
+    cout << "_-----------_-------------------_" << endl;
+}
+
+
 
 // Object Option Menu
 void ObjectOptionMenu() {
@@ -314,7 +367,7 @@ int main() {
     Character character("Player", 20); // Create a character
     int Exit_strat = 0;
     //checks for sword in inventory and if found adds +10 the the players damage (Str)
-    character.CheckForSword();
+    character.CheckForSword(); // should be used after every potential option that effects sword to check to make sure its still owned
 
     
     
@@ -673,32 +726,41 @@ int main() {
                 cout << "\n**NARRATOR:**" << endl;
                 cout << "You decided to check your bag." << endl;
                 displayInventory(character);
+                this_thread::sleep_for(seconds(4));
+                cout << "\n**NARRATOR:**" << endl;
+                cout << "What would you like to do?. " << endl;
+                
+                choice = 0, choice2 = 0;
 
-                this_thread::sleep_for(seconds(6));
-                cout << "+50xp for resting and full health regen." << endl;
-                character.xp += 50;
-                character.levelUp();
-                if (character.health < 100) {
-                    character.health = 100;
-                }
-                else {
-                    cout << "\nYour health is full. \n";
-                }
+                do {
+                    Invinteractionmenu();
+                    cin >> choice; // Add this to get user input for choice
+                    switch (choice) {
+                    case 1:
+                        character.Use_Remove_HP(character);
+                        break;
+                    case 2:
+                        cout << "\n**NARRATOR:**" << endl;
+                        cout << "You decided to exit your bag. " << endl;
+                        this_thread::sleep_for(seconds(2));
+                        cout << "Exiting bag." << endl;
+                        choice2 = 13;
+                        break;
+                    default:
+                        cout << "\n**CONSOLE:**" << endl;
+                        cout << "Invalid choice. Please try again.\n";
+                        break;
+                    }
+                } while (choice2 != 13);
+
+                
                 choice4 = 12;
                 break;
             case 2:
                 cout << "\n**NARRATOR:**" << endl;
-                cout << "You decided not to check your bag and rest." << endl;
-                this_thread::sleep_for(seconds(6));
-                cout << "+50xp for resting and full health regen." << endl;
-                character.xp += 50;
-                character.levelUp();
-                if (character.health < 100) {
-                    character.health = 100;
-                }
-                else {
-                    cout << "\nYour health is full. \n";
-                }
+                cout << "You decided not to check your bag." << endl;
+                this_thread::sleep_for(seconds(4));
+               
                 choice4 = 12;
                 break;
             default:
@@ -707,6 +769,47 @@ int main() {
                 break;
             }
         } while (choice4 != 12);
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "After taking a break you are well rested. " << endl;
+
+        //get xp and health for resting
+        cout << "\n**CONSOLE:**" << endl;
+        cout << "+50xp for resting and full health regen." << endl;
+        character.xp += 50;
+        character.levelUp();
+        if (character.health < 100) {
+            character.health = 100;
+        }
+        else {
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "\nYour health is full, +10xp instead. \n";
+            character.xp += 10;
+            character.levelUp();
+        }
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "After feeling well resting you continue your journey towards the distant white light at the end of the path. " << endl;
+        this_thread::sleep_for(seconds(2));
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "You come acrossed a fallen tree in the middle of your path." << endl;
+        this_thread::sleep_for(seconds(2));
+        // Random Encounter
+        if (rand() % 2 == 0) { // 50% chance of encountering an NPC
+            cout << "\n**NARRATOR:**" << endl;
+            cout << "A SMALL BAND OF MOBS!!!\n\n";
+            encounter(character);
+        }
+        else {
+            cout << "\n**NARRATOR:**" << endl;
+            cout << "You go around the fallen tree.\n";
+            this_thread::sleep_for(seconds(2));
+
+        }
+        // check the players health, if 0 game ends
+        if (character.health <= 0) {
+            cout << "\nYou have died!\n";
+            cout << "\n-Exiting Game-\n";
+            return 0;
+        }
 
 
 
