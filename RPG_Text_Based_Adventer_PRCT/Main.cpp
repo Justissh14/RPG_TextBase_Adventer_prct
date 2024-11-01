@@ -197,12 +197,12 @@ void displayInventory(const Character& character) {
 void fight(Character& player, NPC& npc) {
     cout << "\n**CONSOLE:**" << endl;
     cout << "A wild " << npc.type << " appears with " << npc.health << " health!\n";
-
+    
     while (player.health > 0 && npc.health > 0) {
         cout << "\n**CONSOLE:**" << endl;
         cout << "Your health: " << player.health << ", " << npc.type << " health: " << npc.health << endl;
         cout << "\n**CONSOLE:**" << endl;
-        cout << "Choose an action: [1] Attack [2] Use Health Potion\n";
+        cout << "Choose an action: [1] Attack [2] Use Health Potion \n";
         int action;
         cin >> action;
 
@@ -227,6 +227,7 @@ void fight(Character& player, NPC& npc) {
                 cout << "You have no Health Potions left!\n";
             }
         }
+        
         else {
             cout << "\n**CONSOLE:**" << endl;
             cout << "Invalid action!\n";
@@ -362,6 +363,14 @@ void CheckBagOptionMenu() {
 
 }
 
+//combat exit option menu
+void cExitOptionMenu() {
+    cout << "     |What do you choose|" << endl;
+    cout << "-______________-___________________-" << endl;
+    cout << "|[1] Engage : [2] Run Away |\n";
+    cout << "_-----------_-------------------_" << endl;
+}
+
 int main() {
     srand(static_cast<unsigned>(time(0))); // you have to seed for random number generation in main fnctn
     Character character("Player", 20); // Create a character
@@ -471,12 +480,13 @@ int main() {
         // Class Selection
         cout << "\n**CONSOLE:**" << endl;
         cout << "\n| Choose Your Class |\n";
-        ClassMenu();
+        
         
 
 
 
         do {
+            ClassMenu();
             cin >> choice2;
             switch (choice2) {
             case 1:
@@ -522,7 +532,7 @@ int main() {
             default:
                 cout << "\n**CONSOLE:**" << endl;
                 cout << "Invalid choice. Please try again.\n";
-                ClassMenu();
+                
             }
         } while (choice2 != 9);
 
@@ -560,12 +570,32 @@ int main() {
         cout << "\n**NARRATOR:**" << endl;
         cout << "\nAfter following the dirt path for a while you hear a noise,...\n";
         this_thread::sleep_for(milliseconds(2500));
+        int AltChoice1 = 0;
 
         // Random Encounter
-        if (rand() % 2 == 0) { // 50% chance of encountering an NPC
-            cout << "\n**NARRATOR:**" << endl;
-            cout << "A SMALL BAND OF MOBS!!!\n\n";
-            encounter(character);
+        // 1 = higher chance 2 = lower chance of encounter
+        if (rand() % 1 == 0) { // 50% chance of encountering an NPC
+            do {
+                cout << "\n**NARRATOR:**" << endl;
+                cout << "A SMALL BAND OF MOBS!!!\n\n";
+                cout << "\n**CONSOLE:**" << endl;
+                cExitOptionMenu();
+                cin >> AltChoice1;
+                
+                switch (AltChoice1) {
+                case 1:
+                    encounter(character);
+                    AltChoice1 = 2;
+                    break;
+                case 2:
+                    cout << "You chose to run away. " << endl;
+                    break;
+                default:
+                    cout << "\n**CONSOLE:**" << endl;
+                    cout << "Invalid choice. Please try again.\n";
+                    break;
+                }
+            } while (AltChoice1 != 2);
         }
         else {
             cout << "\n**NARRATOR:**" << endl;
@@ -792,15 +822,36 @@ int main() {
         cout << "\n**NARRATOR:**" << endl;
         cout << "You come acrossed a fallen tree in the middle of your path." << endl;
         this_thread::sleep_for(seconds(2));
+        int AltChoice2 = 0;
+
         // Random Encounter
-        if (rand() % 2 == 0) { // 50% chance of encountering an NPC
-            cout << "\n**NARRATOR:**" << endl;
-            cout << "A SMALL BAND OF MOBS!!!\n\n";
-            encounter(character);
+        // 1 = higher chance 2 = lower chance of encounter
+        if (rand() % 1 == 0) { // 50% chance of encountering an NPC
+            do {
+                cout << "\n**NARRATOR:**" << endl;
+                cout << "A SMALL BAND OF MOBS!!!\n\n";
+                cout << "\n**CONSOLE:**" << endl;
+                cExitOptionMenu();
+                cin >> AltChoice1;
+
+                switch (AltChoice1) {
+                case 1:
+                    encounter(character);
+                    AltChoice1 = 2;
+                    break;
+                case 2:
+                    cout << "You chose to run away. " << endl;
+                    break;
+                default:
+                    cout << "\n**CONSOLE:**" << endl;
+                    cout << "Invalid choice. Please try again.\n";
+                    break;
+                }
+            } while (AltChoice1 != 2);
         }
         else {
             cout << "\n**NARRATOR:**" << endl;
-            cout << "You go around the fallen tree.\n";
+            cout << "Hm, weird place to put a tree.\n";
             this_thread::sleep_for(seconds(2));
 
         }
@@ -811,8 +862,39 @@ int main() {
             return 0;
         }
 
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "You go around the tree and continue your walk for many miles." << endl;
+        this_thread::sleep_for(seconds(2));
 
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "As you approach the bright light at the end of the dirt pathyou grasp your sword. " << endl;
+        this_thread::sleep_for(seconds(2));
 
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "When you get to the source of the light, you see its just a lamp post at the enterance to a small remote village tucked away. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "Hm, maybe I can stop here for supplies, you say to yourself. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "You try to enter the town but get stopped by the gaurd at the gate. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**GUARD:**" << endl;
+        cout << "HALT!, State your business stranger. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**YOU:**" << endl;
+
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        this_thread::sleep_for(seconds(2));
 
         //End Of The Game//
         Exit_strat = 9;
