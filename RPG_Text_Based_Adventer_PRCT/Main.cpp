@@ -15,6 +15,37 @@ using std::cin;
 using std::thread;
 using std::find;
 
+
+
+// Blacksmith1 shop class
+class Blacksmith1 {
+public:
+    string IronArmour;
+    string IronSword;
+    string IronDagger;
+
+    vector<string> BlacksmithInventory; // shop1 inventory
+
+    Blacksmith1(string IronArmour, string IronSword, string IronDagger) : IronArmour(), IronSword(), IronDagger() {
+        for (int i = 0; i < 5; ++i) {
+            BlacksmithInventory.push_back("IronArmour");
+            BlacksmithInventory.push_back("IronSword");
+            BlacksmithInventory.push_back("IronDagger");
+        }
+    }
+    void DisplayShop2Menu() {
+        cout << " \n";
+        cout << "-Weapons/Armour-" << endl;
+        cout << "-_________-_________-" << endl;
+        cout << "[1]IronArmour-{$50} \n";
+        cout << "[2]IronDagger-{$25} \n";
+        cout << "[3]IronSword-{$75} \n";
+        cout << "[4]-Exit_Shop- \n";
+        cout << "_---------_---------_" << endl;
+        cout << " \n";
+    }
+};
+
 //Stat shop class
 class StatShop1 { // still need to add the rest of the shop class like inv and add and sell/ display logic
 public:
@@ -69,6 +100,9 @@ public:
     vector<string> inventory;
     vector<int> Wallet;
 
+    //donning and doffing function
+    vector<string> playerequip;
+
     Character(string n, int a) : name(n), age(a), Str(0), Mag(0), gold(100), Stm(0), Spd(0), Int(0), Wis(0), Con(0), Cha(0), health(100), level(1), xp(0), xpToLevel(100) {
         inventory.push_back("Sword"); // Adds sword to inv
         for (int i = 0; i < 5; ++i) { // Adds 5 health potions to inv
@@ -85,7 +119,7 @@ public:
             player.health += 80;
             cout << "\n**CONSOLE:**" << endl;
             cout << "You regain 80 health!\n";
-            player.inventory.erase(potionIt); // Remove one potion
+            player.inventory.erase(potionIt); // Remove one potion per potion use
         }
         else {
             cout << "\n**CONSOLE:**" << endl;
@@ -104,15 +138,58 @@ public:
             cout << "You gained {200}$ gold!\n";
             player.inventory.erase(weaponIt); // Remove sword from players inventory
         }
+        else if (weaponIt != player.playerequip.end()) {
+            cout << "You cannot sell an item you have equipped. " << endl;
+        }
         else {
             cout << "\n**CONSOLE:**" << endl;
             cout << "You dont own sword!\n";
         }
     }
-    // check inventory for sword and apply boost
-    void CheckForSword() {
-        if (find(inventory.begin(), inventory.end(), "Sword") != inventory.end() ){
-            Str += 10;
+
+    //Function inventory equip and remove sword 
+    void Equip_Remove_Sword(Character& player) {
+        auto weaponIt = find(player.inventory.begin(), player.inventory.end(), "Sword");
+        if (weaponIt != player.inventory.end()) {
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You equipped your sword from inventory!\n";
+            ;
+            player.inventory.erase(weaponIt); // Remove sword from players inventory
+        }
+        else if (weaponIt != player.playerequip.end()) {
+            cout << "You cannot equip an item you do not have equipped. " << endl;
+        }
+        else {
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You dont own sword!\n";
+        }
+    }
+
+    //Function inventory unequip and remove sword 
+    void Unequip_Remove_Sword(Character& player) {
+        auto weaponIt = find(player.playerequip.begin(), player.playerequip.end(), "Sword");
+        if (weaponIt != player.inventory.end()) {
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You unequipped your sword!\n";
+            playerequip.erase(weaponIt); // Remove sword from players equip inventory
+        }
+        else if (weaponIt != player.inventory.end()) {
+            cout << "You dont have this item equipped " << endl;
+        }
+        else {
+            cout << "\n**CONSOLE:**" << endl;
+            cout << "You cannot unequip an item you do not have equipped.!\n";
+        }
+    }
+
+    
+    // check inventory for equip 
+    void CheckForEquip() {
+        if (find(playerequip.begin(), playerequip.end(), "Sword") != playerequip.end() ){
+            cout << "You have equipped an item." << endl;;
+        }
+        else {
+            cout << "You do not have a weapon equipped. " << endl;
         }
     }
     
@@ -168,6 +245,22 @@ public:
         }
     }
 };
+
+// equip weapon function
+void EquipW(Character& player) {
+    if (find(player.inventory.begin(), player.inventory.end(), "Sword") != player.inventory.end()) {
+        player.playerequip.push_back("Sword");
+        player.Equip_Remove_Sword(player);
+    }
+}
+
+// unequip weapon function
+void UnequipW(Character& player) {
+    if (find(player.playerequip.begin(), player.playerequip.end(), "Sword") != player.playerequip.end()) {
+        player.inventory.push_back("Sword");
+        player.Unequip_Remove_Sword(player);
+    }
+}
 
 // NPC class for encounters
 class NPC {
@@ -304,14 +397,21 @@ void ClassMenu() {
 void StatsMenu(const Character& character) {
     cout << "-_______________________________-" << endl;
     cout << "Str: " << character.Str << " Mag: " << character.Mag << endl;
-    if (find(character.inventory.begin(), character.inventory.end(), "Sword") != character.inventory.end()) {
-        cout << "+10 Str boost from ['Sword'].\n ";
-    }
     cout << "Stm: " << character.Stm << " Spd: " << character.Spd << endl;
     cout << "Int: " << character.Int << " Wis: " << character.Wis << endl;
     cout << "Con: " << character.Con << " Cha: " << character.Cha << endl;
     cout << "Health: " << character.health << endl;
     cout << "Level: " << character.level << endl;
+    cout << "_-------------------------------_" << endl;
+    cout << " \n";
+    cout << "         | BOOSTS | " << endl;
+    cout << "-_______________________________-" << endl;
+    if (find(character.playerequip.begin(), character.playerequip.end(), "Sword") != character.playerequip.end()) {
+        cout << "+10 Str boost from ['Sword'].\n ";
+    }
+    else {
+        cout << "You have no boosts active. " << endl;
+    }
     cout << "_-------------------------------_" << endl;
 }
 
@@ -326,15 +426,16 @@ void SubStatsMenu(const string& name, const string& Lineage_choice, const string
 }
 
 // Inventory interaction menu for player
-void Invinteractionmenu() {
+void InvinteractionMenu() {
     cout << "-_______________________________-" << endl;
     cout << "|[1] Use : [2] Exit Bag |\n";
+    cout << "|[3] Equip : [4] Unequip |\n";
     cout << "_-------------------------------_" << endl;
 
 }
 
-//Blacksmith Option Menu
-void BlacksmithOtionMenu() {
+//General Shop Option Menu
+void GnrlShopOptionMenu() {
     cout << "-___________-___________________-" << endl;
     cout << " |[1] Buy : [2] Sell : [3] Exit | " << endl;
     cout << "_-----------_-------------------_" << endl;
@@ -355,7 +456,7 @@ void QuestOptionMenu() {
     cout << "|[1] Interact : [2] Ignore |\n";
     cout << "_-----------_-------------------_" << endl;
 }
-
+//check bag option menu
 void CheckBagOptionMenu() {
     cout << "-______________-___________________-" << endl;
     cout << "|[1] Check Bag : [2] Put Bag Away |\n";
@@ -371,12 +472,20 @@ void cExitOptionMenu() {
     cout << "_-----------_-------------------_" << endl;
 }
 
+void Riddle1DisplayMenu() {
+    cout << "     Q-| 1+1=?|" << endl;
+    cout << "-______________-___________________-" << endl;
+    cout << "|[1] 2 : [2] 5 : [3] 1 : [4] 0 |\n";
+    cout << "_-----------_-------------------_" << endl;
+
+    cout << "Choose your answer." << endl;
+}
 int main() {
     srand(static_cast<unsigned>(time(0))); // you have to seed for random number generation in main fnctn
     Character character("Player", 20); // Create a character
     int Exit_strat = 0;
     //checks for sword in inventory and if found adds +10 the the players damage (Str)
-    character.CheckForSword(); // should be used after every potential option that effects sword to check to make sure its still owned
+    character.CheckForEquip(); // should be used after every potential option that effects sword to check to make sure its still owned
 
     
     
@@ -558,15 +667,31 @@ int main() {
         cout << "\n**NARRATOR:**" << endl;
         cout << "\nYour journey begins in a dark shack in a clearing in the forest...\n";
         this_thread::sleep_for(seconds(2));
+        
+        cout << "\n**YOU:**" << endl;
+        cout << "Well, looks like im homeless and alone. " << endl;
+        this_thread::sleep_for(seconds(2));
+        
+        cout << "\n**YOU:**" << endl;
+        cout << "Lets try and focus on finding a place to call home and rebuild my legacy. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "|OBJECTIVE: FIND PLACE TO CALL HOME| " << endl;
+        this_thread::sleep_for(seconds(2));
+      
         cout << "\n**NARRATOR:**" << endl;
         cout << "You wander into a forest unknowing of what is in there...\n";
         this_thread::sleep_for(seconds(2));
+       
         cout << "\n**NARRATOR:**" << endl;
         cout << "\nYou come across a dirt path leading to a distant white light.\n";
         this_thread::sleep_for(seconds(2));
+      
         cout << "\n**NARRATOR:**" << endl;
         cout << "You decide to follow this dirt path toward the white light.\n";
         this_thread::sleep_for(seconds(2));
+      
         cout << "\n**NARRATOR:**" << endl;
         cout << "\nAfter following the dirt path for a while you hear a noise,...\n";
         this_thread::sleep_for(milliseconds(2500));
@@ -763,7 +888,7 @@ int main() {
                 choice = 0, choice2 = 0;
 
                 do {
-                    Invinteractionmenu();
+                    InvinteractionMenu();
                     cin >> choice; // Add this to get user input for choice
                     switch (choice) {
                     case 1:
@@ -775,6 +900,12 @@ int main() {
                         this_thread::sleep_for(seconds(2));
                         cout << "Exiting bag." << endl;
                         choice2 = 13;
+                        break;
+                    case 3:
+                        EquipW(character); // equip weapon
+                        break;
+                    case 4:
+                        UnequipW(character); // unequip weapon
                         break;
                     default:
                         cout << "\n**CONSOLE:**" << endl;
@@ -799,6 +930,7 @@ int main() {
                 break;
             }
         } while (choice4 != 12);
+        character.CheckForEquip();
         cout << "\n**NARRATOR:**" << endl;
         cout << "After taking a break you are well rested. " << endl;
 
@@ -825,8 +957,8 @@ int main() {
         int AltChoice2 = 0;
 
         // Random Encounter
-        // 1 = higher chance 2 = lower chance of encounter
-        if (rand() % 1 == 0) { // 50% chance of encountering an NPC
+        // 1 = 100% higher chance | 2 = 50% higher chance of encounter
+        if (rand() % 2 == 0) { // 50% chance of encountering an NPC
             do {
                 cout << "\n**NARRATOR:**" << endl;
                 cout << "A SMALL BAND OF MOBS!!!\n\n";
@@ -887,14 +1019,223 @@ int main() {
         this_thread::sleep_for(seconds(2));
 
         cout << "\n**YOU:**" << endl;
+        cout << "I'm just passing through, here to get supplies and rest up than ill be on my way. " << endl;
+        this_thread::sleep_for(seconds(2));
 
+        cout << "\n**GUARD:**" << endl;
+        cout << "If you want to enter your going to have to answer a question. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**YOU:**" << endl;
+        cout << "HM, ok try me im ready. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**GUARD:**" << endl;
+        cout << "Alright, here it is,  " << endl;
+        this_thread::sleep_for(seconds(2));
+        AltChoice1 = 0;
+        AltChoice2 = 0;
+
+        do {
+            Riddle1DisplayMenu();
+            cout << "Your Answr: "; cin >> AltChoice1;
+            switch (AltChoice1) {
+            case 1:
+                cout << "\n**GUARD:**" << endl;
+                cout << "Hahaha " << endl;
+                cout << "Incorrect! No entry, try again. " << endl;
+
+                break;
+            case 2:
+                cout << "\n**GUARD:**" << endl;
+                cout << "Correct! much smarter than I thought, you may enter, Welcome!. " << endl;
+                AltChoice2 = 15;
+                break;
+            case 3:
+                cout << "\n**GUARD:**" << endl;
+                cout << "Hahaha " << endl;
+                cout << "Incorrect! No entry, try again. " << endl;
+
+                break;
+            case 4:
+                cout << "\n**GUARD:**" << endl;
+                cout << "Hahaha " << endl;
+                cout << "Incorrect! No entry, try again. " << endl;
+
+                break;
+            case 5:
+                cout << "\n**GUARD:**" << endl;
+                cout << "Hahaha " << endl;
+                cout << "Incorrect! No entry, try again. " << endl;
+
+                break;
+            default:
+                cout << "\n**CONSOLE:**" << endl;
+                cout << "Invalid choice. Please try again.\n";
+
+                break;
+            }
+                
+        } while (AltChoice2 != 15);
+
+        //gets xp for solving puzzle
+        character.xp += 100;
+        character.levelUp();
+        choice = 0;
+        choice2 = 0;
+        int Bchoice1 = 0;
+        int Bchoice2 = 0;
+        int Pchoice1 = 0;
+        int Pchoice2 = 0;
+
+        // name of town 1 is gonna be -Argun- 
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "You enter the town of Argun. " << endl;
         this_thread::sleep_for(seconds(2));
 
         cout << "\n**NARRATOR:**" << endl;
+        cout << "There are not many buildings and the town is pretty small but the town looks very crowded and busy. " << endl;
         this_thread::sleep_for(seconds(2));
 
         cout << "\n**NARRATOR:**" << endl;
+        cout << "You a potion shop and a blacksmith. " << endl;
         this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "Where do you visit?. " << endl;
+        this_thread::sleep_for(seconds(2));
+        
+        do {
+            cout << "-__________________-___________________-" << endl;
+            cout << "|[1] PotionShop : [2] Blacksmith : [3] Exit |\n";
+            cout << "_------------------_-------------------_" << endl;
+            cout << "Choice:"; cin >> choice;
+
+            switch (choice) {
+            case 1:
+                cout << "You chose to check out the PotionShop. " << endl;
+                GnrlShopOptionMenu();
+                do {
+
+
+                    DisplayShop1Menu();
+                    cin >> Pchoice2;
+                    switch (Pchoice2) {
+                    case 1:  // adds HP Potion to inv
+                        character.AddHP_Potion();
+                        this_thread::sleep_for(seconds(1));
+                        cout << "\n Anything else? \n";
+                        break;
+                    case 2:  // adds STR Potion to inv          
+                        character.AddStr_Potion();
+                        this_thread::sleep_for(seconds(1));
+                        cout << "\n Anything else? \n";
+                        break;
+                    case 3:  // adds SPD Potion to inv
+                        character.AddSpd_Potion();
+                        this_thread::sleep_for(seconds(1));
+                        cout << "\n Anything else? \n";
+                        break;
+                    case 4:
+                        cout << "-Exiting shop, goodbye adventurer.- \n";
+                        this_thread::sleep_for(seconds(1));
+                        Pchoice2 = 19;
+                        break;
+                    default:
+                        cout << "\n**CONSOLE:**" << endl;
+                        cout << "Invalid choice. Please try again.\n";
+                        break;
+                    }
+                } while (Pchoice2 != 19);
+                choice = 18;
+                break;
+            case 2:
+                cout << "You chose to check out the Blacksmith. " << endl;
+                GnrlShopOptionMenu();
+
+                choice = 18;
+                break;
+            case 3:
+                cout << "\n**CONSOLE:**" << endl;
+                cout << "You chose to exit and continue on.\n";
+                choice = 18;
+                break;
+            default:
+                cout << "\n**CONSOLE:**" << endl;
+                cout << "Invalid choice. Please try again.\n";
+
+                break;
+            }
+        } while (choice != 18);
+        
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "You decide to continue your search for a home and leave the small town. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "You leave the town and continue down your path " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        // Random Encounter
+        // 1 = higher chance 2 = lower chance of encounter
+        if (rand() % 1 == 0) { // 50% chance of encountering an NPC
+            do {
+                cout << "\n**NARRATOR:**" << endl;
+                cout << "A SMALL BAND OF MOBS!!!\n\n";
+                cout << "\n**CONSOLE:**" << endl;
+                cExitOptionMenu();
+                cin >> AltChoice1;
+
+                switch (AltChoice1) {
+                case 1:
+                    encounter(character);
+                    AltChoice1 = 2;
+                    break;
+                case 2:
+                    cout << "You chose to run away. " << endl;
+                    break;
+                default:
+                    cout << "\n**CONSOLE:**" << endl;
+                    cout << "Invalid choice. Please try again.\n";
+                    break;
+                }
+            } while (AltChoice1 != 2);
+        }
+        else {
+            cout << "\n**NARRATOR:**" << endl;
+            cout << "It was nothing.\n";
+            this_thread::sleep_for(seconds(2));
+
+        }
+        // check the players health, if 0 game ends
+        if (character.health <= 0) {
+            cout << "\nYou have died!\n";
+            cout << "\n-Exiting Game-\n";
+            return 0;
+        }
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "After traveling very far, you find an abandoned house hidden in a tree infested valley. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "This looks like a good place to call home. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "You go inside, set down your bag and lay down to rest.... " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "You found your new home. " << endl;
+        this_thread::sleep_for(seconds(2));
+
+        cout << "\n**NARRATOR:**" << endl;
+        cout << "YOU ACHIEVED YOUR GOAL!!! " << endl;
+        this_thread::sleep_for(seconds(2));
+        character.xp += 1000;
+        character.levelUp();
+
 
         //End Of The Game//
         Exit_strat = 9;
